@@ -39,7 +39,12 @@ namespace WindowsFormsApp1
         private void Form3_Load(object sender, EventArgs e)
         {
             this.TopMost = top_bool;
-            richTextBox1.Text = "声明:本软件归史宇洋本人所有（不包含任何条款的限制）\n使用此软件所造成的任何问题与本人无关\n\n\n引用的开源的json库。";
+            richTextBox1.Text = "声明:使用此软件所造成的任何问题与本人无关\n\n\n引用的开源的json库。";
+        }
+
+        private void richTextBox1_TextChanged(object sender, EventArgs e)
+        {
+
         }
     }
 }

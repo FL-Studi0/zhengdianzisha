@@ -49,16 +49,14 @@
     <UseVSHostingProcess>true</UseVSHostingProcess>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>afxn5-zhit1-001.ico</ApplicationIcon>
+    <ApplicationIcon>
+    </ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup>
     <SignManifests>false</SignManifests>
   </PropertyGroup>
   <PropertyGroup />
   <ItemGroup>
-    <Reference Include="Aliyun.OSS.Core, Version=2.13.0.0, Culture=neutral, PublicKeyToken=0ad4175f0dac0b9b, processorArchitecture=MSIL">
-      <HintPath>..\packages\Aliyun.OSS.SDK.NetCore.2.13.0\lib\netstandard2.0\Aliyun.OSS.Core.dll</HintPath>
-    </Reference>
     <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.13.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
@@ -68,6 +66,7 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.DirectoryServices" />
+    <Reference Include="System.ServiceProcess" />
     <Reference Include="System.Web" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -111,6 +110,11 @@
     </Compile>
     <Compile Include="offSelf.Designer.cs">
       <DependentUpon>offSelf.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Resource1.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resource1.resx</DependentUpon>
     </Compile>
     <Compile Include="Search_page.cs">
       <SubType>Form</SubType>
@@ -188,6 +192,10 @@
     <EmbeddedResource Include="offSelf.resx">
       <DependentUpon>offSelf.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Resource1.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resource1.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
     <EmbeddedResource Include="Search_page.resx">
       <DependentUpon>Search_page.cs</DependentUpon>
     </EmbeddedResource>
@@ -225,6 +233,29 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="afxn5-zhit1-001.ico" />
+    <EmbeddedResource Include="Resources\Newtonsoft.Json.dll" />
+    <EmbeddedResource Include="Resources\RestSharp.dll" />
+    <None Include="Resources\dark.png" />
+    <None Include="Resources\light.png" />
+    <None Include="Resources\apple.png" />
+    <None Include="Resources\最小化.png" />
+    <None Include="Resources\最大化.png" />
+    <None Include="Resources\关闭.png" />
+    <None Include="Resources\close.png" />
+    <None Include="Resources\24gl-minimization %281%29.png" />
+    <None Include="Resources\data-conversion.png" />
+    <None Include="Resources\version.png" />
+    <None Include="Resources\验证.png" />
+    <None Include="Resources\版本 %281%29.png" />
+    <None Include="Resources\版本.png" />
+    <None Include="Resources\shop.png" />
+    <None Include="Resources\code.png" />
+    <None Include="Resources\手机号.png" />
+    <None Include="Resources\password.png" />
+    <None Include="Resources\user-fill.png" />
+    <None Include="Resources\logout.png" />
+    <None Include="Resources\login.png" />
+    <None Include="Resources\login.bmp" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.7.2">

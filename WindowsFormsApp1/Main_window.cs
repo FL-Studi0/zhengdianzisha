@@ -2,6 +2,7 @@
 using System;
 using System.Diagnostics;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.IO;
 using System.Net;
 using System.Text;
@@ -26,6 +27,7 @@ namespace WindowsFormsApp1
         public Main_window()
         {
             InitializeComponent();
+
         }
 
 
@@ -75,139 +77,7 @@ namespace WindowsFormsApp1
         }
 
         //当点击登陆后的一系列响应
-        private void button1_Click(object sender, EventArgs e)
-        {
-            //登陆前先刷新上次的内容
-            //防止登录失败后内容的残留
-            label13.Text = "未获取";
-            label14.Text = "未获取";
-            label15.Text = "未获取";
-            label16.Text = "未获取";
-            pictureBox1.Image = null;
-            jwt_public = "";
 
-            //判断是否输入为空
-            if (textBox1.Text == "")
-            {
-                MessageBox.Show("请输入手机号");
-                return;
-            }
-
-            if (!IsPhoneNo(textBox1.Text))
-            {
-                MessageBox.Show("手机号非法");
-                return;
-            }
-            else
-            {
-                //传入手机号和验证码，获取登录返回的json字符串
-                //string Login_Json = Sentsms(textBox1.Text, textBox2.Text);
-                string Login_Json;
-
-                try
-                {
-                    if (textBox2.ReadOnly == true)
-                    {
-                        Login_Json = Sentsms(textBox1.Text, "12345678");
-                    }
-                    else
-                    {
-                        Login_Json = Sentsms(textBox1.Text, textBox2.Text);
-                    }
-                }
-                catch
-                {
-
-                    MessageBox.Show("网络连接超时");
-                    return;
-
-
-
-                }
-
-
-                //判断json字符串中的errcode
-                //通过实体类请求
-                Root rt = JsonConvert.DeserializeObject<Root>(Login_Json);
-
-
-                //JObject Login_Errcode_Json = (JObject)JsonConvert.DeserializeObject();
-                int Login_Errcode = rt.errcode;
-
-                //响应返回值
-                label5.Text = Login_Errcode.ToString();
-                //表示一切正常
-                if (Login_Errcode == 0)
-                {
-
-                    //解析json_data字符串
-                    //JObject Data_Json_jo = (JObject)JsonConvert.DeserializeObject(Login_Json);
-                    //string Login_Data_Json = Data_Json_jo["data"].ToString();
-
-                    //获取用户名
-                    //string Nickname_Str = Login_User_Json_jo["nickname"].ToString();
-
-
-                    //获取用户名
-                    string Nickname_Str = rt.data.user.nickname;
-                    //获取头像
-                    string Headimgurl_Str = rt.data.user.headimgurl;
-                    //获取开店状态
-                    int is_store = rt.data.user.is_master;
-                    //获取jwt验证
-                    string jwt_str = rt.data.jwt.ToString();
-                    //获取后端版本
-                    string version_server = rt.data.version.ToString();
-
-
-                    //答应解析到的用户名
-                    //richTextBox1.Text += PrintStr_addtime("用户名:" + Nickname_Str, false);
-                    //答应解析到的头像
-                    //richTextBox1.Text += PrintStr_addtime("头像url:" + Headimgurl_Str, false);
-
-
-                    label13.Text = Nickname_Str;
-
-                    //判断是否开店
-                    if (is_store == 1)
-                    {
-                        label14.Text = ("已开店");
-                    }
-                    else
-                    {
-                        label14.Text = ("未开店");
-                    }
-
-                    //richTextBox1.Text += PrintStr_addtime("jwt验证:\n" + jwt_str, false);
-                    label15.Text = jwt_str;
-
-                    //richTextBox1.Text += PrintStr_addtime("后端版本:" + version_server, false);
-                    label16.Text = version_server;
-
-                    pictureBox1.LoadAsync(Headimgurl_Str);
-
-                    //jwt到全局变量
-                    jwt_public = jwt_str;
-                    //username到全局变量
-                    username_public = Nickname_Str;
-                }
-                //errcode 10004
-                else if (Login_Errcode == 10004)
-                {
-                    MessageBox.Show("验证码错误");
-                }
-                //errcode 10001
-                else if (Login_Errcode == 10001)
-                {
-                    MessageBox.Show("请输入验证码");
-                }
-                //errcode els
-                else
-                {
-                    MessageBox.Show("未识别的错误请反馈");
-                }
-            }
-        }
 
         private void textBox2_TextChanged(object sender, EventArgs e)
         {
@@ -227,10 +97,7 @@ namespace WindowsFormsApp1
         //清空button响应的操作
         private void button2_Click(object sender, EventArgs e)
         {
-            label13.Text = label14.Text = label15.Text = label16.Text = "           ";
-            pictureBox1.Image = null;
-            jwt_public = "";
-
+            clean_login();
         }
 
 
@@ -264,46 +131,26 @@ namespace WindowsFormsApp1
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            label2.TextAlign = ContentAlignment.MiddleRight;
-            label8.TextAlign = ContentAlignment.MiddleRight;
-            label9.TextAlign = ContentAlignment.MiddleRight;
-            label10.TextAlign = ContentAlignment.MiddleRight;
-            label11.TextAlign = ContentAlignment.MiddleRight;
-            label12.TextAlign = ContentAlignment.MiddleRight;
 
-            label6.Text = Version;
+
+
+            //label6.Text = Version;
 
             //加密验证
             //login_verify();
 
-
+            //圆角
+            SetWindowRegion();
             timer1.Enabled = true;
+            dark_mode();
         }
 
 
 
-        int check_num = 0;
+
         private void label2_Click(object sender, EventArgs e)
         {
-            check_num++;
 
-            if (check_num == 3)
-            {
-                label2.ForeColor = System.Drawing.Color.Red;
-                label2.Text += "\n(实验功能)";
-                textBox2.ReadOnly = true;
-                button5.Visible = true;
-            }
-        }
-
-        private void button5_Click(object sender, EventArgs e)
-        {
-            button5.Visible = false;
-            label2.Text = "测试软件，不可商用";
-            label2.ForeColor = System.Drawing.Color.Black;
-            textBox2.ReadOnly = false;
-            textBox2.Text = "";
-            check_num = 0;
         }
 
 
@@ -427,19 +274,25 @@ namespace WindowsFormsApp1
             this.TopMost = is_top;
         }
 
+        //窗体边线
+        private void window_belt(PaintEventArgs e)
+        {
+            Rectangle tang = this.ClientRectangle;					//获取窗口矩形 为了下面得到窗口的宽高
+            Graphics g3 = e.Graphics;								//新建一个画布
+            Color c3 = Color.FromArgb(46, 204, 113);				//声明一个 颜色
+            Pen p3 = new Pen(c3);									//新建一支画笔
+            g3.SmoothingMode = SmoothingMode.HighQuality;                 //抗锯齿 使得线条变柔顺  在画斜线或者曲线的时候使用
+            g3.InterpolationMode = InterpolationMode.HighQualityBicubic;    //使得画出来的效果高质量
+            g3.CompositingQuality = CompositingQuality.HighQuality;           //高质量画图
+            g3.DrawLine(p3, 0, 0, 0, tang.Height - 1);				//在（0，0）和（tang.Width - 1, 0）这两点间画一条直线
+            g3.DrawLine(p3, 0, tang.Height - 1, tang.Width - 1, tang.Height - 1);	//注意必须减1 不然显示不出来  因为 如果假设窗口的高度是3像素 我们知道（0，0）位置代表 窗口最左上角的像素点  那么最左下角的像素点应该是（0，2） 而不是（0，3） 因为0，1，2 已经三个像素点了
+            g3.DrawLine(p3, tang.Width - 1, tang.Height - 1, tang.Width - 1, 0);
+            g3.DrawLine(p3, tang.Width - 1, 0, 0, 0);
+        }
+
         private void Main_window_Paint(object sender, PaintEventArgs e)
         {
-            //Rectangle tang = this.ClientRectangle;					//获取窗口矩形 为了下面得到窗口的宽高
-            //Graphics g3 = e.Graphics;								//新建一个画布
-            //Color c3 = Color.FromArgb(46, 204, 113);				//声明一个 颜色
-            //Pen p3 = new Pen(c3);									//新建一支画笔
-            //g3.SmoothingMode = SmoothingMode.HighQuality;                 //抗锯齿 使得线条变柔顺  在画斜线或者曲线的时候使用
-            //g3.InterpolationMode = InterpolationMode.HighQualityBicubic;    //使得画出来的效果高质量
-            //g3.CompositingQuality = CompositingQuality.HighQuality;           //高质量画图
-            //g3.DrawLine(p3, 0, 0, 0, tang.Height - 1);				//在（0，0）和（tang.Width - 1, 0）这两点间画一条直线
-            //g3.DrawLine(p3, 0, tang.Height - 1, tang.Width - 1, tang.Height - 1);	//注意必须减1 不然显示不出来  因为 如果假设窗口的高度是3像素 我们知道（0，0）位置代表 窗口最左上角的像素点  那么最左下角的像素点应该是（0，2） 而不是（0，3） 因为0，1，2 已经三个像素点了
-            //g3.DrawLine(p3, tang.Width - 1, tang.Height - 1, tang.Width - 1, 0);
-            //g3.DrawLine(p3, tang.Width - 1, 0, 0, 0);
+            //window_belt(e);
         }
 
         private void label15_Click(object sender, EventArgs e)
@@ -606,19 +459,11 @@ namespace WindowsFormsApp1
             is_english = true;
             简体中文ToolStripMenuItem.Checked = false;
             englishToolStripMenuItem.Checked = true;
-            groupBox1.Text = "Login area";
-            label1.Text = "Phone:";
-            label3.Text = "code:";
+
+
             button1.Text = "Login";
             button2.Text = "Sign out";
 
-            groupBox2.Text = "information area";
-            label8.Text = "Username:";
-            label9.Text = "Store status";
-            label11.Text = "Server version:";
-            label12.Text = "Head img:";
-
-            button5.Text = "close";
 
 
             功能ToolStripMenuItem.Text = "Tools";
@@ -638,30 +483,25 @@ namespace WindowsFormsApp1
             搜索ToolStripMenuItem.Text = "Search";
 
 
-            label2.Text = "Test mode";
+
             p_title = "Test software, not for commercial use  ";
 
         }
 
         private void 简体中文ToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            is_english=false;
+            is_english = false;
             简体中文ToolStripMenuItem.Checked = true;
             englishToolStripMenuItem.Checked = false;
 
-            groupBox1.Text = "登录区域";
-            label1.Text = "手机号:";
-            label3.Text = "验证码:";
+
             button1.Text = "登录";
             button2.Text = "登出";
 
-            groupBox2.Text = "信息区域";
-            label8.Text = "用户名:";
-            label9.Text = "店铺状态";
-            label11.Text = "后端版本:";
-            label12.Text = "头像:";
 
-            button5.Text= "关闭";
+
+
+
 
 
             功能ToolStripMenuItem.Text = "功能";
@@ -669,7 +509,7 @@ namespace WindowsFormsApp1
             关于ToolStripMenuItem.Text = "帮助";
 
 
-            label2.Text = "测试软件，不可商用";
+
             p_title = "测试软件，不可商用  ";
 
         }
@@ -696,6 +536,305 @@ namespace WindowsFormsApp1
             {
                 MessageBox.Show("请先登陆账号");
             }
+        }
+
+
+        private void clean_login()
+        {
+
+            label13.Text = "Administrator";
+            label14.Text = "No Login";
+            label15.Text = "No Login";
+            label16.Text = "No Login";
+            pictureBox1.Image = Resource1.user_fill;
+            jwt_public = "";
+        }
+
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            //清除登录
+            clean_login();
+
+            //判断是否输入为空
+            if (textBox1.Text == "")
+            {
+                MessageBox.Show("请输入手机号");
+                return;
+            }
+
+            if (!IsPhoneNo(textBox1.Text))
+            {
+                MessageBox.Show("手机号非法");
+                return;
+            }
+            else
+            {
+                //传入手机号和验证码，获取登录返回的json字符串
+                //string Login_Json = Sentsms(textBox1.Text, textBox2.Text);
+                string Login_Json;
+
+                try
+                {
+                    Login_Json = Sentsms(textBox1.Text, textBox2.Text);
+
+                }
+                catch
+                {
+
+                    MessageBox.Show("网络连接超时");
+                    return;
+
+
+
+                }
+
+
+                //判断json字符串中的errcode
+                //通过实体类请求
+                Root rt = JsonConvert.DeserializeObject<Root>(Login_Json);
+
+
+                //JObject Login_Errcode_Json = (JObject)JsonConvert.DeserializeObject();
+                int Login_Errcode = rt.errcode;
+
+                //响应返回值
+                label5.Text = Login_Errcode.ToString();
+                //表示一切正常
+                if (Login_Errcode == 0)
+                {
+
+                    //解析json_data字符串
+                    //JObject Data_Json_jo = (JObject)JsonConvert.DeserializeObject(Login_Json);
+                    //string Login_Data_Json = Data_Json_jo["data"].ToString();
+
+                    //获取用户名
+                    //string Nickname_Str = Login_User_Json_jo["nickname"].ToString();
+
+
+                    //获取用户名
+                    string Nickname_Str = rt.data.user.nickname;
+                    //获取头像
+                    string Headimgurl_Str = rt.data.user.headimgurl;
+                    //获取开店状态
+                    int is_store = rt.data.user.is_master;
+                    //获取jwt验证
+                    string jwt_str = rt.data.jwt.ToString();
+                    //获取后端版本
+                    string version_server = rt.data.version.ToString();
+
+
+                    //答应解析到的用户名
+                    //richTextBox1.Text += PrintStr_addtime("用户名:" + Nickname_Str, false);
+                    //答应解析到的头像
+                    //richTextBox1.Text += PrintStr_addtime("头像url:" + Headimgurl_Str, false);
+
+
+                    label13.Text = Nickname_Str;
+
+                    //判断是否开店
+                    if (is_store == 1)
+                    {
+                        label14.Text = ("已开店");
+                    }
+                    else
+                    {
+                        label14.Text = ("未开店");
+                    }
+
+                    //richTextBox1.Text += PrintStr_addtime("jwt验证:\n" + jwt_str, false);
+                    label15.Text = jwt_str;
+
+                    //richTextBox1.Text += PrintStr_addtime("后端版本:" + version_server, false);
+                    label16.Text = version_server;
+
+                    pictureBox1.LoadAsync(Headimgurl_Str);
+
+                    //jwt到全局变量
+                    jwt_public = jwt_str;
+                    //username到全局变量
+                    username_public = Nickname_Str;
+                }
+                //errcode 10004
+                else if (Login_Errcode == 10004)
+                {
+                    MessageBox.Show("验证码错误");
+                }
+                //errcode 10001
+                else if (Login_Errcode == 10001)
+                {
+                    MessageBox.Show("请输入验证码");
+                }
+                //errcode els
+                else
+                {
+                    MessageBox.Show("未识别的错误请反馈");
+                }
+            }
+        }
+
+
+
+
+
+        //圆角开始
+
+
+        public void SetWindowRegion()
+        {
+            System.Drawing.Drawing2D.GraphicsPath FormPath;
+            FormPath = new System.Drawing.Drawing2D.GraphicsPath();
+            Rectangle rect = new Rectangle(0, 0, this.Width, this.Height);
+            FormPath = GetRoundedRectPath(rect, 10);
+            this.Region = new Region(FormPath);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="rect">窗体大小</param>
+        /// <param name="radius">圆角大小</param>
+        /// <returns></returns>
+        private GraphicsPath GetRoundedRectPath(Rectangle rect, int radius)
+        {
+            int diameter = 30;
+            Rectangle arcRect = new Rectangle(rect.Location, new Size(diameter, diameter));
+            GraphicsPath path = new GraphicsPath();
+
+            path.AddArc(arcRect, 180, 90);//左上角
+
+            arcRect.X = rect.Right - diameter;//右上角
+            path.AddArc(arcRect, 270, 90);
+
+            arcRect.Y = rect.Bottom - diameter;// 右下角
+            path.AddArc(arcRect, 0, 90);
+
+            arcRect.X = rect.Left;// 左下角
+            path.AddArc(arcRect, 90, 90);
+            path.CloseFigure();
+            return path;
+        }
+
+
+        internal static int WM_NCHITTEST = 0x84; //移动鼠标，按住或释放鼠标时发生的系统消息
+        internal static IntPtr HTCLIENT = (IntPtr)0x1;//工作区
+        internal static IntPtr HTCAPTION = (IntPtr)0x2; //标题栏
+        protected override void WndProc(ref Message m)
+        {
+            if (m.Msg == WM_NCHITTEST)
+            {
+                base.WndProc(ref m);
+                if (m.Result == HTCLIENT)
+                {
+                    m.HWnd = this.Handle;
+
+                    Rectangle rect = this.RectangleToScreen(this.ClientRectangle);
+                    Point C_Pos = Cursor.Position;
+                    m.Result = HTCAPTION;//模拟标题栏,移动或双击可以最大或最小化窗体
+                }
+            }
+            else
+            {
+                base.WndProc(ref m);
+            }
+        }
+
+
+        //圆角结束
+
+        private void button9_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
+
+        private void button2_Click_1(object sender, EventArgs e)
+        {
+
+        }
+
+        bool is_dark = true;
+
+
+        private void dark_mode()
+        {
+            int dark_a = 40;
+            int dark_b = 40;
+            int dark_c = 40;
+
+
+            button11.BackgroundImage = Resource1.dark;
+
+            panel5.BackColor = panel8.BackColor = panel17.BackColor = panel6.BackColor = Color.FromArgb(dark_a, dark_b, dark_c);
+            textBox2.BackColor = textBox1.BackColor = Color.FromArgb(dark_a, dark_b, dark_c);
+            menuStrip1.BackColor = Color.FromArgb(dark_a, dark_b, dark_c);
+            panel1.BackColor = Color.Black;
+
+            label1.ForeColor = label2.ForeColor = label3.ForeColor = label17.ForeColor = Color.WhiteSmoke;
+            label19.ForeColor = Color.Gainsboro;
+            textBox2.ForeColor = textBox1.ForeColor = Color.White;
+            menuStrip1.ForeColor = Color.White;
+            label13.ForeColor = label14.ForeColor = label15.ForeColor = label16.ForeColor = Color.White;
+            label4.ForeColor = label5.ForeColor = Color.White;
+
+
+        }
+
+        private void light_mode()
+        {
+            button11.BackgroundImage = Resource1.light;
+
+            panel5.BackColor = panel8.BackColor = panel17.BackColor = panel6.BackColor = Color.White;
+            textBox2.BackColor = textBox1.BackColor = Color.White;
+            menuStrip1.BackColor = Color.White;
+            panel1.BackColor = Color.FromArgb(244, 248, 249);
+
+            label1.ForeColor = label2.ForeColor = label3.ForeColor = label17.ForeColor = Color.Gray;
+            label19.ForeColor = Color.DimGray;
+            textBox2.ForeColor = textBox1.ForeColor = Color.Black;
+            menuStrip1.ForeColor = Color.Black;
+            label13.ForeColor = label14.ForeColor = label15.ForeColor = label16.ForeColor = Color.Black;
+            label4.ForeColor = label5.ForeColor = Color.Black;
+
+
+        }
+
+
+
+        private void button11_Click(object sender, EventArgs e)
+        {
+            if (is_dark == false)
+            {
+                dark_mode();
+                is_dark = true;
+            }
+            else
+            {
+                light_mode();
+                is_dark = false;
+            }
+        }
+
+        private void yuanjiao()
+        {
+            GraphicsPath gp = new GraphicsPath();
+            gp.AddEllipse(pictureBox1.ClientRectangle);
+            Region region = new Region(gp);
+            pictureBox1.Region = region;
+            gp.Dispose();
+            region.Dispose();
+        }
+
+
+
+        private void pictureBox1_Paint(object sender, PaintEventArgs e)
+        {
+            //图片圆角
+            //yuanjiao();
+        }
+
+        private void panel1_Paint(object sender, PaintEventArgs e)
+        {
+
         }
     }
 }
