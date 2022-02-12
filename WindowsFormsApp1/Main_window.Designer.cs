@@ -772,9 +772,9 @@ namespace WindowsFormsApp1
             this.button11.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
             this.button11.FlatAppearance.BorderSize = 0;
             this.button11.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.button11.Location = new System.Drawing.Point(19, 468);
+            this.button11.Location = new System.Drawing.Point(10, 459);
             this.button11.Name = "button11";
-            this.button11.Size = new System.Drawing.Size(26, 26);
+            this.button11.Size = new System.Drawing.Size(38, 33);
             this.button11.TabIndex = 10;
             this.button11.UseVisualStyleBackColor = true;
             this.button11.Click += new System.EventHandler(this.button11_Click);

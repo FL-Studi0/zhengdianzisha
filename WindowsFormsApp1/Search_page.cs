@@ -15,13 +15,6 @@ namespace WindowsFormsApp1
             InitializeComponent();
         }
 
-
-
-
-
-
-
-
         private string string1;
         public string String1
         {
@@ -185,6 +178,25 @@ namespace WindowsFormsApp1
             return rt;
         }
 
+
+        private string abb(int max_len, string str)
+        {
+            if (str.Length > max_len)
+            {
+                return str.Substring(0, max_len) + "...";
+
+            }
+            else
+            {
+                return str;
+            }
+
+
+
+        }
+
+
+
         private void forearch_commodity(Root3 rt)
         {
             //计数器
@@ -198,18 +210,12 @@ namespace WindowsFormsApp1
                 all_str += list_num.ToString();
                 all_str += ".";
                 all_str += "商品名称：";
-                string tmp = "";
-                int max_length = 27;
-                if (num.name.Length > max_length)
-                {
-                    tmp = num.name.Substring(0, max_length);
-                    tmp += "...";
-                }
-                else
-                {
-                    tmp = num.name;
-                }
-                all_str += tmp += "\n";
+
+                //
+                //int max_length = 27;
+                //string goods_name = abb(max_length, num.name);
+
+                all_str += num.name += "\n";
                 all_str += "价格：";
                 all_str += num.now_price;
                 all_str += "\n\n";
@@ -300,7 +306,7 @@ namespace WindowsFormsApp1
 
         private void button2_Click(object sender, EventArgs e)
         {
-            Root4 rt = get_hot_search_json(1000);
+            Root4 rt = get_hot_search_json(30);
             if (check_ret_json(rt))
             {
                 MessageBox.Show(get_hot_search(rt));
@@ -309,8 +315,6 @@ namespace WindowsFormsApp1
             {
                 MessageBox.Show("内部错误，获取失败");
             }
-
-
 
         }
     }
